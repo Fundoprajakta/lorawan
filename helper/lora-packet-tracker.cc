@@ -108,6 +108,49 @@ LoraPacketTracker::MacGwReceptionCallback (Ptr<Packet const> packet)
 /////////////////
 // PHY metrics //
 /////////////////
+  
+  
+//PHY Metrics for Downlink
+  
+void
+LoraPacketTracker::TransmissionCallbackDownlink (Ptr<Packet const> packet, uint32_t gwId)
+{
+  /***Ptr<Packet> packetCopy = packet->Copy ();
+  LoraMacHeader mHdr;
+  packetCopy->RemoveHeader (mHdr);***/
+  if(!IsUplink (packet))
+    {
+      NS_LOG_INFO ("PHY packet " << packet);
+      // Create a packetStatus
+      PacketStatusDownlink status;
+      status.packetDownlink = packet;
+      status.sendTimeDownlink = Simulator::Now ();
+      status.senderIdDownlink = gwId;
+
+      m_packetTrackerDownlink.insert (std::pair<Ptr<Packet const>, PacketStatusDownlink> (packet, status));
+    }
+}
+
+
+
+void
+LoraPacketTracker::PacketReceptionCallbackDownlink (Ptr<Packet const> packet, uint32_t edId)
+{
+  Ptr<Packet> packetCopy = packet->Copy ();
+  LoraMacHeader mHdr;
+  packetCopy->RemoveHeader (mHdr);
+  if (mHdr.IsUplink ())
+    {
+      // Remove the successfully received packet from the list of sent ones
+      NS_LOG_INFO ("PHY packet " << packet);
+
+      std::map<Ptr<Packet const>, PacketStatusDownlink>::iterator it = m_packetTrackerDownlink.find (packet);
+      (*it).second.outcomesDownlink.insert (std::pair<int, enum PhyPacketOutcomeDownlink> (
+                                                                           RECEIVEDDownlink));
+    }
+}
+  
+//Actual file
 
 void
 LoraPacketTracker::TransmissionCallback (Ptr<Packet const> packet, uint32_t edId)
@@ -372,6 +415,57 @@ LoraPacketTracker::PrintPhyPacketsPerGw (Time startTime, Time stopTime,
     return std::to_string (sent) + " " +
       std::to_string (received);
   }
+  
+    double LoraPacketTracker::EachEndDevicePER(uint32_t senderID, NodeContainer gateways, Time startTime, Time stopTime)
+  {
+    NS_LOG_FUNCTION (this << startTime << stopTime);
+    double sent = 0;
+    double received = 0;
+    for(auto it = m_packetTracker.begin (); it != m_packetTracker.end (); ++it)    
+    {
+      //std::cout<< m_packetTracker.size() << std::endl;
+      uint32_t edid = (*it).second.senderId;
+      if((*it).second.sendTime >= startTime && (*it).second.sendTime <= stopTime)
+      {
+        if(senderID == edid)
+        {
+          sent++;
+          for (NodeContainer::Iterator j = gateways.Begin (); j != gateways.End (); ++j)
+          {
+            Ptr<Node> object = *j;
+            uint32_t gwID = object->GetId (); 
+            if ((*it).second.outcomes.count(gwID) > 0)
+            {
+              switch ((*it).second.outcomes.at (gwID))
+              {
+                case RECEIVED:
+                {
+                  received++;
+                  break;
+                }
+                
+                default:
+                {
+                  break;
+                }
+              }
+
+            }
+          }
+        }
+      }
+    }
+    double PER = (sent - received)/sent; 
+    return PER;
+  }
+  
+  void LoraPacketTracker::EachEndDevicePERDL(void)
+  {
+    int l = m_packetTracker1.size();
+    std::cout<< l << std::endl;
+    
+  }
+
 
   std::string
   LoraPacketTracker::CountMacPacketsGloballyCpsr (Time startTime, Time stopTime)
