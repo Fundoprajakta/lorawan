@@ -110,10 +110,19 @@ public:
                                                 Time interval);
 
   void DoPrintGlobalPerformance (std::string filename);
+  
+  
+  //Print PER for each endDevices
+  void DoPrintPERED (NodeContainer endDevices, NodeContainer gateways, std::string filename);
+  void EnablePeriodicPERED (NodeContainer endDevices, NodeContainer gateways, std::string filename, Time interval);
 
   LoraPacketTracker& GetPacketTracker (void);
+   
+  LoraPacketTracker& GetPacketTrackerDownlink (void);
 
   LoraPacketTracker* m_packetTracker = 0;
+  
+  LoraPacketTracker* m_packetTracker1 = 0;
 
   time_t m_oldtime;
 
@@ -132,6 +141,7 @@ private:
 
   Time m_lastPhyPerformanceUpdate;
   Time m_lastGlobalPerformanceUpdate;
+  Time m_lastPered;
 };
 
 } //namespace ns3
