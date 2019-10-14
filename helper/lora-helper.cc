@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("LoraHelper");
 
   LoraHelper::LoraHelper () :
     m_lastPhyPerformanceUpdate (Seconds (0)),
-    m_lastGlobalPerformanceUpdate (Seconds (0))
+    m_lastGlobalPerformanceUpdate (Seconds (0)),
+    m_lastPered (Seconds(0))
   {
   }
 
@@ -60,6 +61,37 @@ NS_LOG_COMPONENT_DEFINE ("LoraHelper");
         NS_ASSERT (phy != 0);
         device->SetPhy (phy);
         NS_LOG_DEBUG ("Done creating the PHY");
+      
+      
+        if (m_packetTrackerDownlink)
+        {
+          if (phyHelper.GetDeviceType () ==
+                TypeId::LookupByName ("ns3::SimpleEndDeviceLoraPhy"))
+
+          {
+            phy->TraceConnectWithoutContext ("ReceivedPacket",
+                                                 MakeCallback
+                                                 (&LoraPacketTracker::PacketReceptionCallbackDownlink,m_packetTrackerDownlink));
+          }
+
+
+          else if (phyHelper.GetDeviceType () ==
+                     TypeId::LookupByName ("ns3::SimpleGatewayLoraPhy"))
+
+          {
+
+            phy->TraceConnectWithoutContext ("StartSending",
+                                               MakeCallback
+                                               (&LoraPacketTracker::TransmissionCallbackDownlink,
+                                                m_packetTrackerDownlink));
+
+          }
+
+
+
+        }
+      
+            
 
         // Connect Trace Sources if necessary
         if (m_packetTracker)
@@ -162,6 +194,15 @@ LoraHelper::EnablePacketTracking ()
   // Create the packet tracker
   m_packetTracker = new LoraPacketTracker ();
 }
+    
+void
+LoraHelper::EnablePacketTrackingDownlink()
+{
+  NS_LOG_FUNCTION (this);
+
+  // Create the packet tracker
+  m_packetTrackerDownlink = new LoraPacketTracker ();
+}
 
 LoraPacketTracker&
 LoraHelper::GetPacketTracker (void)
@@ -170,6 +211,14 @@ LoraHelper::GetPacketTracker (void)
 
   return *m_packetTracker;
 }
+  
+LoraPacketTracker& LoraHelper::GetPacketTrackerDownlink (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  return *m_packetTrackerDownlink;
+}
+
 
 void
 LoraHelper::EnableSimulationTimePrinting (Time interval)
@@ -332,6 +381,45 @@ LoraHelper::DoPrintGlobalPerformance (std::string filename)
   m_lastGlobalPerformanceUpdate = Simulator::Now ();
 
   outputFile.close();
+}
+  
+  
+void LoraHelper::DoPrintPERED (NodeContainer endDevices, NodeContainer gateways, std::string filename)
+{
+  NS_LOG_FUNCTION (this);
+
+  const char * c = filename.c_str ();
+  std::ofstream outputFile;
+  if (Simulator::Now () == Seconds (0))
+    {
+      // Delete contents of the file as it is opened
+      outputFile.open (c, std::ofstream::out | std::ofstream::trunc);
+    }
+  else
+    {
+      // Only append to the file
+      outputFile.open (c, std::ofstream::out | std::ofstream::app);
+    }
+
+
+  for (auto it = endDevices.Begin (); it != endDevices.End (); ++it)
+    {
+      uint32_t systemId = (*it)->GetId ();
+      outputFile << Simulator::Now ().GetSeconds () << " " <<
+        systemId << " " <<
+        m_packetTracker->EachEndDevicePER(systemId, gateways, m_lastPered, Simulator::Now ()) << std::endl;
+    }
+
+  m_lastPered = Simulator::Now ();
+  outputFile.close();
+}
+
+
+void LoraHelper::EnablePeriodicPERED (NodeContainer endDevices, NodeContainer gateways, std::string filename, Time interval)
+{
+  NS_LOG_FUNCTION (this);
+  DoPrintPERED (endDevices, gateways, filename);
+  Simulator::Schedule(interval, &LoraHelper::EnablePeriodicPERED, this, endDevices, gateways, filename, interval);
 }
 
 void
