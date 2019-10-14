@@ -22,7 +22,7 @@
 #define LORA_PACKET_TRACKER_H
 
 #include "ns3/packet.h"
-#include "ns3/nstime.h"
+Downlinkinclude "ns3/nstime.h"
 
 #include <map>
 #include <string>
@@ -68,6 +68,27 @@ struct RetransmissionStatus
 typedef std::map<Ptr<Packet const>, MacPacketStatus> MacPacketData;
 typedef std::map<Ptr<Packet const>, PacketStatus> PhyPacketData;
 typedef std::map<Ptr<Packet const>, RetransmissionStatus> RetransmissionData;
+  
+enum PhyPacketOutcomeDownlink
+{
+  RECEIVEDDownlink,
+  INTERFEREDDownlink,
+  NO_MORE_RECEIVERSDownlink,
+  UNDER_SENSITIVITYDownlink,
+  LOST_BECAUSE_TXDownlink,
+  UNSETDownlink
+};
+
+struct PacketStatusDownlink
+{
+  Ptr<Packet const> packetDownlink;
+  uint32_t senderIdDownlink;
+  Time sendTimeDownlink;
+  std::map<int, enum PhyPacketOutcomeDownlink> outcomesDownlink;
+};
+
+typedef std::map<Ptr<Packet const>, PacketStatusDownlink> PhyPacketDataDownlink;
+
 
 
 class LoraPacketTracker
@@ -79,6 +100,19 @@ public:
   /////////////////////////
   // PHY layer callbacks //
   /////////////////////////
+  
+  //for downlink
+  void TransmissionCallbackDownlink (Ptr<Packet const> packet);
+  // Packet outcome traces
+  void PacketReceptionCallbackDownlink (Ptr<Packet const> packet);
+  void InterferenceCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
+  void NoMoreReceiversCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
+  void UnderSensitivityCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
+  void LostBecauseTxCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
+  
+  
+  
+  //Actual Code
   // Packet transmission callback
   void TransmissionCallback (Ptr<Packet const> packet, uint32_t systemId);
   // Packet outcome traces
@@ -159,10 +193,15 @@ public:
    * of packets that generated a successful acknowledgment.
    */
   std::string CountMacPacketsGloballyCpsr (Time startTime, Time stopTime);
+  
+  //Calculare PER for each endDevice
+  double EachEndDevicePER (uint32_t senderID, NodeContainer gateways, Time startTime, Time stopTime);
+  
 private:
   PhyPacketData m_packetTracker;
   MacPacketData m_macPacketTracker;
   RetransmissionData m_reTransmissionTracker;
+  PhyPacketData1 m_packetTrackerDownlink;
 };
 }
 }
