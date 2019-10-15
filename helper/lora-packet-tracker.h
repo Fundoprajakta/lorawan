@@ -102,9 +102,9 @@ public:
   /////////////////////////
   
   //for downlink
-  void TransmissionCallbackDownlink (Ptr<Packet const> packet);
+  void TransmissionCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
   // Packet outcome traces
-  void PacketReceptionCallbackDownlink (Ptr<Packet const> packet);
+  void PacketReceptionCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
   void InterferenceCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
   void NoMoreReceiversCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
   void UnderSensitivityCallbackDownlink (Ptr<Packet const> packet, uint32_t systemId);
