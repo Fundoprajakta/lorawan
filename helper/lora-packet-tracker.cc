@@ -416,48 +416,6 @@ LoraPacketTracker::PrintPhyPacketsPerGw (Time startTime, Time stopTime,
       std::to_string (received);
   }
   
-    double LoraPacketTracker::EachEndDevicePER(uint32_t senderID, NodeContainer gateways, Time startTime, Time stopTime)
-  {
-    NS_LOG_FUNCTION (this << startTime << stopTime);
-    double sent = 0;
-    double received = 0;
-    for(auto it = m_packetTracker.begin (); it != m_packetTracker.end (); ++it)    
-    {
-      //std::cout<< m_packetTracker.size() << std::endl;
-      uint32_t edid = (*it).second.senderId;
-      if((*it).second.sendTime >= startTime && (*it).second.sendTime <= stopTime)
-      {
-        if(senderID == edid)
-        {
-          sent++;
-          for (NodeContainer::Iterator j = gateways.Begin (); j != gateways.End (); ++j)
-          {
-            Ptr<Node> object = *j;
-            uint32_t gwID = object->GetId (); 
-            if ((*it).second.outcomes.count(gwID) > 0)
-            {
-              switch ((*it).second.outcomes.at (gwID))
-              {
-                case RECEIVED:
-                {
-                  received++;
-                  break;
-                }
-                
-                default:
-                {
-                  break;
-                }
-              }
-
-            }
-          }
-        }
-      }
-    }
-    double PER = (sent - received)/sent; 
-    return PER;
-  }
   
   void LoraPacketTracker::EachEndDevicePERDL(void)
   {
