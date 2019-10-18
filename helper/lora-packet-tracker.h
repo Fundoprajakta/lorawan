@@ -194,8 +194,6 @@ public:
    */
   std::string CountMacPacketsGloballyCpsr (Time startTime, Time stopTime);
   
-  //Calculare PER for each endDevice
-  double EachEndDevicePER (uint32_t senderID, NodeContainer gateways, Time startTime, Time stopTime);
   
 private:
   PhyPacketData m_packetTracker;
