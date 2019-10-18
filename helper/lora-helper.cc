@@ -30,8 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("LoraHelper");
 
   LoraHelper::LoraHelper () :
     m_lastPhyPerformanceUpdate (Seconds (0)),
-    m_lastGlobalPerformanceUpdate (Seconds (0)),
-    m_lastPered (Seconds(0))
+    m_lastGlobalPerformanceUpdate (Seconds (0))
   {
   }
 
@@ -383,44 +382,6 @@ LoraHelper::DoPrintGlobalPerformance (std::string filename)
   outputFile.close();
 }
   
-  
-void LoraHelper::DoPrintPERED (NodeContainer endDevices, NodeContainer gateways, std::string filename)
-{
-  NS_LOG_FUNCTION (this);
-
-  const char * c = filename.c_str ();
-  std::ofstream outputFile;
-  if (Simulator::Now () == Seconds (0))
-    {
-      // Delete contents of the file as it is opened
-      outputFile.open (c, std::ofstream::out | std::ofstream::trunc);
-    }
-  else
-    {
-      // Only append to the file
-      outputFile.open (c, std::ofstream::out | std::ofstream::app);
-    }
-
-
-  for (auto it = endDevices.Begin (); it != endDevices.End (); ++it)
-    {
-      uint32_t systemId = (*it)->GetId ();
-      outputFile << Simulator::Now ().GetSeconds () << " " <<
-        systemId << " " <<
-        m_packetTracker->EachEndDevicePER(systemId, gateways, m_lastPered, Simulator::Now ()) << std::endl;
-    }
-
-  m_lastPered = Simulator::Now ();
-  outputFile.close();
-}
-
-
-void LoraHelper::EnablePeriodicPERED (NodeContainer endDevices, NodeContainer gateways, std::string filename, Time interval)
-{
-  NS_LOG_FUNCTION (this);
-  DoPrintPERED (endDevices, gateways, filename);
-  Simulator::Schedule(interval, &LoraHelper::EnablePeriodicPERED, this, endDevices, gateways, filename, interval);
-}
 
 void
 LoraHelper::DoPrintSimulationTime (Time interval)
