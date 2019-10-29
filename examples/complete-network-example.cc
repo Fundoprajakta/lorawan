@@ -328,7 +328,7 @@ int main (int argc, char *argv[])
 
   LoraPacketTracker& tracker = helper.GetPacketTracker ();
   LoraPacketTracker& trackerDownlink = helper.GetPacketTrackerDownlink ();
-  trackerDoownlink.DownlinkpacketTracker();
+  trackerDownlink.DownlinkpacketTracker();
   
   std::cout << tracker.CountMacPacketsGlobally(Seconds(0), appStopTime + Hours (1)) << std::endl;
 
