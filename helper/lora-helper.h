@@ -122,7 +122,7 @@ public:
 
   LoraPacketTracker* m_packetTracker = 0;
   
-  LoraPacketTracker* m_packetTracker1 = 0;
+  LoraPacketTracker* m_packetTrackerDownlink = 0;
 
   time_t m_oldtime;
 
