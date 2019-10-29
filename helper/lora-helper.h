@@ -80,6 +80,8 @@ public:
    * metrics.
    */
   void EnablePacketTracking (void);
+  
+  void EnablePacketTrackingDownlink (void);
 
   /**
    * Periodically prints the simulation time to the standard output.
