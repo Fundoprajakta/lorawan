@@ -22,7 +22,7 @@
 #define LORA_PACKET_TRACKER_H
 
 #include "ns3/packet.h"
-Downlinkinclude "ns3/nstime.h"
+#include "ns3/nstime.h"
 
 #include <map>
 #include <string>
