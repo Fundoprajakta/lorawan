@@ -201,7 +201,7 @@ private:
   PhyPacketData m_packetTracker;
   MacPacketData m_macPacketTracker;
   RetransmissionData m_reTransmissionTracker;
-  PhyPacketData1 m_packetTrackerDownlink;
+  PhyPacketDataDownlink m_packetTrackerDownlink;
 };
 }
 }
