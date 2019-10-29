@@ -150,7 +150,8 @@ int main (int argc, char *argv[])
 
   // Create the LoraHelper
   LoraHelper helper = LoraHelper ();
-  helper.EnablePacketTracking (); // Output filename
+  helper.EnablePacketTracking ();
+  helper.EnablePacketTrackingDownlink// Output filename
   // helper.EnableSimulationTimePrinting ();
 
   //Create the NetworkServerHelper
