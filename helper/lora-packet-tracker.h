@@ -194,6 +194,8 @@ public:
    */
   std::string CountMacPacketsGloballyCpsr (Time startTime, Time stopTime);
   
+  void DownlinkpacketTracker();
+  
   
 private:
   PhyPacketData m_packetTracker;
