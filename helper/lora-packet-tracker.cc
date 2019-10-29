@@ -145,7 +145,7 @@ LoraPacketTracker::PacketReceptionCallbackDownlink (Ptr<Packet const> packet, ui
       NS_LOG_INFO ("PHY packet " << packet);
 
       std::map<Ptr<Packet const>, PacketStatusDownlink>::iterator it = m_packetTrackerDownlink.find (packet);
-      (*it).second.outcomesDownlink.insert (std::pair<int, enum PhyPacketOutcomeDownlink> (uint32_t edId,
+      (*it).second.outcomesDownlink.insert (std::pair<int, enum PhyPacketOutcomeDownlink> (edId,
                                                                            RECEIVEDDownlink));
     }
 }
