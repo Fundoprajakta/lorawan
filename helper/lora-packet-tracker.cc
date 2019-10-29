@@ -417,7 +417,7 @@ LoraPacketTracker::PrintPhyPacketsPerGw (Time startTime, Time stopTime,
   }
   
   
-  void LoraPacketTracker::EachEndDevicePERDL(void)
+  void LoraPacketTracker::DownlinkpacketTracker(void)
   {
     int l = m_packetTrackerDoownlink.size();
     std::cout<< l << std::endl;
