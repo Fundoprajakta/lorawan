@@ -327,6 +327,9 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Computing performance metrics...");
 
   LoraPacketTracker& tracker = helper.GetPacketTracker ();
+  LoraPacketTracker& trackerDownlink = helper.GetPacketTrackerDownlink ();
+  trackerDoownlink.DownlinkpacketTracker();
+  
   std::cout << tracker.CountMacPacketsGlobally(Seconds(0), appStopTime + Hours (1)) << std::endl;
 
   return 0;
